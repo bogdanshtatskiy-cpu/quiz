@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Quiz</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="blobs">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+    </div>
+
+    <div class="glass-panel">
+        
+        <section id="screen-home" class="screen active">
+            <h1 class="logo">Brain<span class="highlight">Flow</span></h1>
+            <p class="desc">Интеллектуальная викторина нового поколения</p>
+            <button class="btn-primary" onclick="App.goToSettings()">Начать игру</button>
+            <div class="info-badge">Build v1.0 • GitHub Edition</div>
+        </section>
+
+        <section id="screen-setup" class="screen hidden">
+            <div class="header-nav">
+                <button class="btn-icon" onclick="App.goToHome()">←</button>
+                <h2>Настройка</h2>
+            </div>
+
+            <div id="step-cat" class="setup-step">
+                <h3>Категории</h3>
+                <div id="categories-list" class="grid-2"></div>
+                <button class="btn-primary mt-20" onclick="App.nextSetupStep('diff')">Далее</button>
+            </div>
+
+            <div id="step-diff" class="setup-step hidden">
+                <h3>Сложность</h3>
+                <div class="diff-selector">
+                    <button class="btn-select" onclick="App.selectDiff('easy', this)">🟢 Школьник</button>
+                    <button class="btn-select" onclick="App.selectDiff('medium', this)">🟡 Бывалый</button>
+                    <button class="btn-select" onclick="App.selectDiff('hard', this)">🔴 Магистр</button>
+                </div>
+
+                <h3>Время на ответ</h3>
+                <div class="time-selector">
+                    <button class="btn-mini" onclick="App.selectTime(15, this)">15с</button>
+                    <button class="btn-mini active" onclick="App.selectTime(30, this)">30с</button>
+                    <button class="btn-mini" onclick="App.selectTime(60, this)">60с</button>
+                </div>
+
+                <button class="btn-primary mt-20" onclick="App.startGame()">ЗАПУСК</button>
+            </div>
+        </section>
+
+        <section id="screen-game" class="screen hidden">
+            <div class="top-bar">
+                <div class="score-box">💎 <span id="score">0</span></div>
+                <div class="timer-pie" id="timer-visual"></div>
+            </div>
+
+            <div class="question-container">
+                <p id="question-text"></p> </div>
+
+            <div id="answers-area" class="answers-list">
+                </div>
+
+            <div class="lifelines">
+                <button class="lifeline" onclick="Game.use5050(this)">
+                    <span>50/50</span>
+                    <small>2.5 💎</small>
+                </button>
+                <button class="lifeline" onclick="Game.usePoll(this)">
+                    <span>📊 Люди</span>
+                    <small>1.5 💎</small>
+                </button>
+                <button class="lifeline" onclick="Game.useSkip(this)">
+                    <span>⏭️ Скип</span>
+                    <small>5.0 💎</small>
+                </button>
+            </div>
+        </section>
+
+        <div id="modal-round" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="round-title">Верно!</h2>
+                <div class="stats-row">
+                    <span>Текущий счет:</span>
+                    <span id="round-score">0</span>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="App.goToHome()">Меню</button>
+                    <button class="btn-primary" onclick="Game.nextQuestion()">Далее →</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/questions.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
