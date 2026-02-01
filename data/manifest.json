@@ -2,27 +2,39 @@
   "categories": [
     { 
       "id": "general", 
-      "name": "Общее", 
-      "icon": "ph-brain",
-      "desc": "Все обо всем"
+      "name": "Разминка", 
+      "icon": "ph-brain", 
+      "desc": "Сборная солянка фактов" 
+    },
+    { 
+      "id": "geo", 
+      "name": "География", 
+      "icon": "ph-globe-hemisphere-west", 
+      "desc": "Страны, столицы и флаги" 
+    },
+    { 
+      "id": "tech", 
+      "name": "IT и Игры", 
+      "icon": "ph-laptop", 
+      "desc": "Код, железо и гейминг" 
+    },
+    { 
+      "id": "cinema", 
+      "name": "Кино и ТВ", 
+      "icon": "ph-film-strip", 
+      "desc": "Фильмы, сериалы, актеры" 
+    },
+    { 
+      "id": "music", 
+      "name": "Музыка", 
+      "icon": "ph-music-notes", 
+      "desc": "Хиты, жанры и легенды" 
     },
     { 
       "id": "history", 
       "name": "История", 
       "icon": "ph-scroll", 
-      "desc": "Даты и события"
-    },
-    { 
-      "id": "tech", 
-      "name": "Технологии", 
-      "icon": "ph-laptop", 
-      "desc": "IT и гаджеты"
-    },
-    {
-      "id": "science",
-      "name": "Наука",
-      "icon": "ph-atom",
-      "desc": "Физика и химия"
+      "desc": "Великие даты и события" 
     }
   ]
 }
