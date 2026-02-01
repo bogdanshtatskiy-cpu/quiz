@@ -1,7 +1,28 @@
 {
   "categories": [
-    { "id": "general", "name": "🧠 Общее", "icon": "ph-brain" },
-    { "id": "history", "name": "📜 История", "icon": "ph-scroll" },
-    { "id": "tech", "name": "💻 Техно", "icon": "ph-laptop" }
+    { 
+      "id": "general", 
+      "name": "Общее", 
+      "icon": "ph-brain",
+      "desc": "Все обо всем"
+    },
+    { 
+      "id": "history", 
+      "name": "История", 
+      "icon": "ph-scroll", 
+      "desc": "Даты и события"
+    },
+    { 
+      "id": "tech", 
+      "name": "Технологии", 
+      "icon": "ph-laptop", 
+      "desc": "IT и гаджеты"
+    },
+    {
+      "id": "science",
+      "name": "Наука",
+      "icon": "ph-atom",
+      "desc": "Физика и химия"
+    }
   ]
 }
