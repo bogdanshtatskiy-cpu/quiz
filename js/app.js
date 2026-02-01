@@ -7,7 +7,7 @@ const loader = new QuestionLoader();
 
 const App = {
     state: {
-        score: 5.0, // Старт
+        score: 5.0,
         category: null,
         difficulty: 'medium',
         timeLimit: 30,
@@ -23,20 +23,25 @@ const App = {
         App.updateScoreUI();
     },
 
-    // UI Navigation
+    // --- НАВИГАЦИЯ ---
     goToSettings: () => App.switchScreen('screen-setup'),
     goToHome: () => App.switchScreen('screen-home'),
+    
     switchScreen: (id) => {
         document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
+        const active = document.getElementById(id);
+        active.classList.remove('hidden');
+        active.classList.add('fade-in');
     },
 
-    // Setup Logic
+    // --- РЕНДЕР КАТЕГОРИЙ ---
     renderCats: (cats) => {
+        // Генерируем карточки без эмодзи в тексте
         const html = cats.map(c => `
             <div class="cat-card" onclick="App.selectCat('${c.id}', '${c.name}', this)">
                 <i class="ph-duotone ${c.icon} cat-icon"></i>
-                <div style="font-weight:600">${c.name}</div>
+                <div class="cat-name">${c.name}</div>
+                <div class="cat-desc">${c.desc || ''}</div>
             </div>
         `).join('');
         document.getElementById('categories-list').innerHTML = html;
@@ -56,12 +61,11 @@ const App = {
 
     selectTime: (val, el) => {
         App.state.timeLimit = val;
-        // сброс классов active у соседей (простой способ через parent)
         el.parentElement.querySelectorAll('.segment').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
     },
 
-    // Game Start
+    // --- СТАРТ ИГРЫ ---
     startGame: async () => {
         if (!App.state.category) return alert("Выберите категорию!");
         
@@ -69,6 +73,7 @@ const App = {
         App.state.questions = data.sort(() => Math.random() - 0.5);
         App.state.currentQ = 0;
         
+        // Устанавливаем название категории в хедер игры
         document.getElementById('game-cat-name').innerText = App.state.category.name;
         App.switchScreen('screen-game');
         Game.loadQuestion();
@@ -90,12 +95,12 @@ const Game = {
         Game.active = true;
         clearInterval(App.state.timer);
         
-        // Reset UI
+        // Сброс UI
         document.getElementById('answers-container').innerHTML = '';
         document.getElementById('timer-circle').style.strokeDashoffset = 0;
         document.getElementById('timer-circle').style.stroke = 'var(--success)';
         
-        // Typewriter Effect
+        // Анимация текста (Печатная машинка)
         const qEl = document.getElementById('question-text');
         qEl.innerText = "";
         let i = 0;
@@ -104,9 +109,9 @@ const Game = {
             qEl.innerText += txt.charAt(i);
             i++;
             if (i >= txt.length) clearInterval(typeInt);
-        }, 20);
+        }, 15); // Чуть быстрее скорость печати
 
-        // Render Answers
+        // Рендер ответов
         q.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
             btn.className = 'answer-btn';
@@ -122,7 +127,7 @@ const Game = {
         App.state.timeLeft = App.state.timeLimit;
         const circle = document.getElementById('timer-circle');
         const text = document.getElementById('timer-text');
-        const total = 163; // 2*PI*R (R=26)
+        const total = 163;
 
         text.innerText = App.state.timeLeft;
 
@@ -136,7 +141,7 @@ const Game = {
             if (App.state.timeLeft < 10) circle.style.stroke = 'var(--danger)';
             
             if (App.state.timeLeft <= 0) {
-                Game.submit(-1, null); // Timeout
+                Game.submit(-1, null);
             }
         }, 1000);
     },
@@ -156,11 +161,11 @@ const Game = {
                 App.state.score += CONFIG.rewards[App.state.difficulty];
             } else {
                 btn.classList.add('wrong');
-                allBtns[q.correct].classList.add('correct'); // Show right answer
+                allBtns[q.correct].classList.add('correct');
             }
         } else {
-            // Timeout logic
-             allBtns[q.correct].classList.add('correct');
+             // Если время вышло
+             if(allBtns[q.correct]) allBtns[q.correct].classList.add('correct');
         }
 
         App.updateScoreUI();
@@ -169,9 +174,23 @@ const Game = {
 
     showModal: (win) => {
         const m = document.getElementById('modal-round');
-        document.getElementById('modal-title').innerText = win ? "Превосходно!" : "Ошибка";
-        document.getElementById('modal-title').style.color = win ? "var(--success)" : "var(--danger)";
-        document.getElementById('modal-desc').innerText = win ? `+${CONFIG.rewards[App.state.difficulty]} 💎` : "Не расстраивайся";
+        const title = document.getElementById('modal-title');
+        const desc = document.getElementById('modal-desc');
+        const iconContainer = document.getElementById('modal-icon-container');
+
+        // Чистая типографика и иконки, никаких эмодзи
+        title.innerText = win ? "Верно" : "Ошибка";
+        title.style.color = win ? "var(--success)" : "var(--danger)";
+        
+        // Меняем иконку внутри модалки
+        if (win) {
+            iconContainer.innerHTML = '<i class="ph-duotone ph-check-circle" style="font-size: 64px; color: var(--success);"></i>';
+            desc.innerHTML = `+${CONFIG.rewards[App.state.difficulty]} <span style="font-size:0.8em; opacity:0.7">баллов</span>`;
+        } else {
+            iconContainer.innerHTML = '<i class="ph-duotone ph-x-circle" style="font-size: 64px; color: var(--danger);"></i>';
+            desc.innerText = "В следующий раз повезет";
+        }
+
         m.classList.remove('hidden');
     },
 
@@ -182,38 +201,53 @@ const Game = {
     },
     
     endGame: () => {
-        alert("Вопросы кончились! Твой счет: " + App.state.score);
+        alert("Раунд завершен! Итоговый счет: " + App.state.score.toFixed(1));
         App.goToHome();
     },
 
-    // Lifelines Logic
+    // --- ПОДСКАЗКИ ---
     checkLifelines: () => {
         ['5050', 'poll', 'skip'].forEach(type => {
             const btn = document.getElementById('life-'+type);
-            btn.disabled = App.state.score < CONFIG.costs['p'+type] && App.state.score < CONFIG.costs[type];
+            const cost = CONFIG.costs['p'+type] || CONFIG.costs[type];
+            // Блокируем кнопку, если не хватает денег
+            if (App.state.score < cost) {
+                btn.classList.add('disabled');
+                btn.disabled = true;
+            } else {
+                btn.classList.remove('disabled');
+                btn.disabled = false;
+            }
         });
     },
 
     useLifeline: (type) => {
-        const cost = CONFIG.costs[type === '5050' ? 'p5050' : type];
+        const costKey = type === '5050' ? 'p5050' : type;
+        const cost = CONFIG.costs[costKey];
+        
         if (App.state.score < cost || !Game.active) return;
         
         App.state.score -= cost;
         App.updateScoreUI();
-        document.getElementById(type === '5050' ? 'life-5050' : 'life-'+type).disabled = true;
+        
+        const btn = document.getElementById(type === '5050' ? 'life-5050' : 'life-'+type);
+        btn.disabled = true;
+        btn.classList.add('used'); // Стиль для использованной кнопки
 
         const q = App.state.questions[App.state.currentQ];
         const btns = document.querySelectorAll('.answer-btn');
 
         if (type === '5050') {
             let removed = 0;
-            btns.forEach((b, i) => {
-                if (i !== q.correct && removed < 2) {
-                    if (Math.random() > 0.5) {
-                        b.classList.add('dimmed');
-                        removed++;
-                    }
-                }
+            // Создаем массив индексов, исключая правильный
+            const wrongIndices = [];
+            btns.forEach((_, i) => {
+                if (i !== q.correct) wrongIndices.push(i);
+            });
+            // Перемешиваем и берем 2
+            wrongIndices.sort(() => Math.random() - 0.5);
+            wrongIndices.slice(0, 2).forEach(idx => {
+                btns[idx].classList.add('dimmed');
             });
         }
         
@@ -222,26 +256,35 @@ const Game = {
         }
 
         if (type === 'poll') {
-            // Smart crowd simulation
+            // Симуляция голосования
             const votes = [0,0,0,0];
             let left = 100;
             
-            // 80% chance crowd is right
+            // 85% шанс что толпа права
             const correctVotes = Math.floor(Math.random() * (85 - 40) + 40);
             votes[q.correct] = correctVotes;
             left -= correctVotes;
 
+            // Распределяем остаток
             votes.forEach((_, i) => {
                 if (i !== q.correct) {
-                    let v = Math.floor(Math.random() * left);
-                    if (i === 3 && i !== q.correct) v = left; // Dump rest
+                    let v = (i === 3 && i !== q.correct) ? left : Math.floor(Math.random() * left);
+                    // Корректировка для последнего элемента, если он не правильный
+                    if (i === 3 && i !== q.correct) v = left; 
+                    else if (i !== 3) left -= v;
+                    
                     votes[i] = v;
-                    left -= v;
                 }
             });
+            // Финальная зачистка остатков, если логика выше сбойнет (просто страховка)
+            const sum = votes.reduce((a,b)=>a+b,0);
+            if(sum < 100) votes[q.correct] += (100 - sum);
 
             btns.forEach((b, i) => {
-                b.innerHTML += `<div class="vote-bar" style="width:${votes[i]}%"></div><span class="vote-text">${votes[i]}%</span>`;
+                b.innerHTML += `
+                    <div class="vote-bar" style="width:${votes[i]}%"></div>
+                    <span class="vote-text">${votes[i]}%</span>
+                `;
             });
         }
     }
