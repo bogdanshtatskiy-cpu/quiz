@@ -2,97 +2,120 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liquid Quiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BrainFlow Quiz</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <div class="blobs">
-        <div class="blob b1"></div>
-        <div class="blob b2"></div>
-        <div class="blob b3"></div>
-    </div>
+    <div class="app-background"></div>
 
-    <div class="glass-panel">
-        
-        <section id="screen-home" class="screen active">
-            <h1 class="logo">Brain<span class="highlight">Flow</span></h1>
-            <p class="desc">Интеллектуальная викторина нового поколения</p>
-            <button class="btn-primary" onclick="App.goToSettings()">Начать игру</button>
-            <div class="info-badge">Build v1.0 • GitHub Edition</div>
+    <div class="ios-container">
+
+        <section id="screen-home" class="screen active fade-in">
+            <div class="logo-area">
+                <i class="ph-duotone ph-brain logo-icon"></i>
+                <h1>Brain<span class="highlight">Flow</span></h1>
+                <p>Тренировка интеллекта</p>
+            </div>
+            
+            <div class="bottom-controls">
+                <button class="btn-primary" onclick="App.goToSettings()">
+                    <span>Начать игру</span>
+                    <i class="ph-bold ph-arrow-right"></i>
+                </button>
+                <button class="btn-secondary" onclick="alert('Версия 1.0 Alpha')">
+                    <span>О приложении</span>
+                </button>
+            </div>
         </section>
 
         <section id="screen-setup" class="screen hidden">
-            <div class="header-nav">
-                <button class="btn-icon" onclick="App.goToHome()">←</button>
+            <header class="nav-header">
+                <button class="icon-btn" onclick="App.goToHome()"><i class="ph-bold ph-caret-left"></i></button>
                 <h2>Настройка</h2>
-            </div>
+                <div style="width: 40px;"></div> </header>
 
-            <div id="step-cat" class="setup-step">
-                <h3>Категории</h3>
-                <div id="categories-list" class="grid-2"></div>
-                <button class="btn-primary mt-20" onclick="App.nextSetupStep('diff')">Далее</button>
-            </div>
+            <div class="setup-scroll">
+                <h3>Категория</h3>
+                <div id="categories-list" class="grid-2">
+                    </div>
 
-            <div id="step-diff" class="setup-step hidden">
                 <h3>Сложность</h3>
-                <div class="diff-selector">
-                    <button class="btn-select" onclick="App.selectDiff('easy', this)">🟢 Школьник</button>
-                    <button class="btn-select" onclick="App.selectDiff('medium', this)">🟡 Бывалый</button>
-                    <button class="btn-select" onclick="App.selectDiff('hard', this)">🔴 Магистр</button>
+                <div class="segment-control">
+                    <button class="segment active" data-val="easy" onclick="App.selectDiff('easy', this)">Easy</button>
+                    <button class="segment" data-val="medium" onclick="App.selectDiff('medium', this)">Medium</button>
+                    <button class="segment" data-val="hard" onclick="App.selectDiff('hard', this)">Hard</button>
                 </div>
 
-                <h3>Время на ответ</h3>
-                <div class="time-selector">
-                    <button class="btn-mini" onclick="App.selectTime(15, this)">15с</button>
-                    <button class="btn-mini active" onclick="App.selectTime(30, this)">30с</button>
-                    <button class="btn-mini" onclick="App.selectTime(60, this)">60с</button>
+                <h3>Время</h3>
+                <div class="segment-control">
+                    <button class="segment" onclick="App.selectTime(15, this)">15с</button>
+                    <button class="segment active" onclick="App.selectTime(30, this)">30с</button>
+                    <button class="segment" onclick="App.selectTime(60, this)">60с</button>
                 </div>
-
-                <button class="btn-primary mt-20" onclick="App.startGame()">ЗАПУСК</button>
             </div>
+
+            <button class="btn-primary float-bottom" onclick="App.startGame()">Поехали!</button>
         </section>
 
         <section id="screen-game" class="screen hidden">
-            <div class="top-bar">
-                <div class="score-box">💎 <span id="score">0</span></div>
-                <div class="timer-pie" id="timer-visual"></div>
+            <header class="game-header">
+                <div class="pill category-pill">
+                    <i class="ph-duotone ph-circles-four icon-left"></i>
+                    <span id="game-cat-name">Общее</span>
+                </div>
+                <div class="pill score-pill">
+                    <i class="ph-duotone ph-diamond icon-gem"></i>
+                    <span id="score-val">0</span>
+                </div>
+            </header>
+
+            <div class="timer-wrapper">
+                <svg class="timer-svg" width="60" height="60">
+                    <circle class="timer-bg" cx="30" cy="30" r="26"></circle>
+                    <circle class="timer-progress" id="timer-circle" cx="30" cy="30" r="26"></circle>
+                </svg>
+                <span id="timer-text">30</span>
             </div>
 
-            <div class="question-container">
-                <p id="question-text"></p> </div>
+            <main class="question-area">
+                <div class="question-card">
+                    <h2 id="question-text">Загрузка...</h2>
+                </div>
+            </main>
 
-            <div id="answers-area" class="answers-list">
+            <div class="answers-grid" id="answers-container">
                 </div>
 
-            <div class="lifelines">
-                <button class="lifeline" onclick="Game.use5050(this)">
-                    <span>50/50</span>
-                    <small>2.5 💎</small>
+            <footer class="game-footer">
+                <button class="lifeline-btn" id="life-5050" onclick="Game.useLifeline('5050')">
+                    <div class="icon-box"><i class="ph-duotone ph-scales"></i></div>
+                    <span>50/50 <small class="cost">2.5</small></span>
                 </button>
-                <button class="lifeline" onclick="Game.usePoll(this)">
-                    <span>📊 Люди</span>
-                    <small>1.5 💎</small>
+                
+                <button class="lifeline-btn" id="life-poll" onclick="Game.useLifeline('poll')">
+                    <div class="icon-box"><i class="ph-duotone ph-users-three"></i></div>
+                    <span>Люди <small class="cost">1.5</small></span>
                 </button>
-                <button class="lifeline" onclick="Game.useSkip(this)">
-                    <span>⏭️ Скип</span>
-                    <small>5.0 💎</small>
+                
+                <button class="lifeline-btn" id="life-skip" onclick="Game.useLifeline('skip')">
+                    <div class="icon-box"><i class="ph-duotone ph-fast-forward"></i></div>
+                    <span>Скип <small class="cost">5.0</small></span>
                 </button>
-            </div>
+            </footer>
         </section>
 
         <div id="modal-round" class="modal hidden">
             <div class="modal-content">
-                <h2 id="round-title">Верно!</h2>
-                <div class="stats-row">
-                    <span>Текущий счет:</span>
-                    <span id="round-score">0</span>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" onclick="App.goToHome()">Меню</button>
-                    <button class="btn-primary" onclick="Game.nextQuestion()">Далее →</button>
-                </div>
+                <div class="modal-icon" id="modal-icon"></div>
+                <h2 id="modal-title">Верно!</h2>
+                <p id="modal-desc">+1.0 Кристалл</p>
+                <button class="btn-primary" onclick="Game.nextQuestion()">Далее</button>
             </div>
         </div>
 
