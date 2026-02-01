@@ -1,50 +1,41 @@
 class QuestionLoader {
     constructor() {
-        this.basePath = 'data/';
+        this.path = 'data/';
     }
 
-    // Загрузка манифеста (список категорий)
     async loadManifest() {
         try {
-            // Для теста создадим виртуальный манифест, если файла нет
-            // В реальности fetch(this.basePath + 'manifest.json')
+            const res = await fetch(this.path + 'manifest.json');
+            return await res.json();
+        } catch (e) {
+            console.error("Manifest load error:", e);
+            // Фейковые данные если файл не найден
             return {
                 categories: [
-                    { id: 'general', name: '🧠 Общее' },
-                    { id: 'geo', name: '🌍 География' },
-                    { id: 'tech', name: '💻 IT & Код' },
-                    { id: 'memes', name: '🤡 Мемы' }
+                    { id: 'general', name: '🧠 Общее', icon: 'ph-brain' },
+                    { id: 'tech', name: '💻 IT & Код', icon: 'ph-code' }
                 ]
             };
-        } catch (e) {
-            console.error(e);
-            return { categories: [] };
         }
     }
 
-    // Загрузка чанка вопросов (например data/general/easy_1.json)
-    async loadChunk(category, difficulty, chunkIndex = 1) {
-        const path = `${this.basePath}${category}/${difficulty}_${chunkIndex}.json`;
-        console.log(`Loading: ${path}`);
-        
+    async loadChunk(category, diff, index = 1) {
         try {
-            const response = await fetch(path);
-            if (!response.ok) throw new Error('File not found');
-            return await response.json();
+            const res = await fetch(`${this.path}${category}/${diff}_${index}.json`);
+            if (!res.ok) throw new Error('404');
+            return await res.json();
         } catch (e) {
-            console.warn(`Chunk loaded failed, using fallback data for demo.`);
-            return this.getFallbackData(difficulty);
+            console.warn("Using fallback questions");
+            return this.getFallback(diff);
         }
     }
 
-    // Временные данные для теста, если ты еще не создал JSON файлы
-    getFallbackData(diff) {
-        const suffix = diff === 'hard' ? ' (Сложно)' : '';
-        return Array.from({length: 10}, (_, i) => ({
+    getFallback(diff) {
+        return Array.from({length: 5}, (_, i) => ({
             id: i,
-            q: `Вопрос номер ${i + 1} уровня ${diff}?`,
-            options: [`Ответ A${suffix}`, `Правильный${suffix}`, `Ответ C`, `Ответ D`],
-            correct: 1 // Индекс правильного (0-3)
+            q: `Тестовый вопрос #${i+1} (${diff})?`,
+            options: ["Неверно 1", "Правильный", "Неверно 2", "Неверно 3"],
+            correct: 1
         }));
     }
 }
