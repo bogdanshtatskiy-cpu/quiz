@@ -9,11 +9,11 @@ class QuestionLoader {
             return await res.json();
         } catch (e) {
             console.error("Manifest load error:", e);
-            // Фейковые данные если файл не найден
+            // Fallback без эмодзи
             return {
                 categories: [
-                    { id: 'general', name: '🧠 Общее', icon: 'ph-brain' },
-                    { id: 'tech', name: '💻 IT & Код', icon: 'ph-code' }
+                    { id: 'general', name: 'Общее', icon: 'ph-brain', desc: 'Обо всём' },
+                    { id: 'code', name: 'Код', icon: 'ph-code', desc: 'JS & Python' }
                 ]
             };
         }
@@ -31,10 +31,11 @@ class QuestionLoader {
     }
 
     getFallback(diff) {
+        // Fallback вопросы тоже без эмодзи
         return Array.from({length: 5}, (_, i) => ({
             id: i,
-            q: `Тестовый вопрос #${i+1} (${diff})?`,
-            options: ["Неверно 1", "Правильный", "Неверно 2", "Неверно 3"],
+            q: `Тестовый вопрос #${i+1} (Уровень: ${diff})`,
+            options: ["Неверный ответ", "Правильный ответ", "Еще неверный", "Тоже неверный"],
             correct: 1
         }));
     }
