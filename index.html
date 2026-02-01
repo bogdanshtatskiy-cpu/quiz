@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BrainFlow Quiz</title>
-    
+    <title>BrainFlow Premium</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -16,58 +14,81 @@
 
     <div class="ios-container">
 
-        <section id="screen-home" class="screen active fade-in">
-            <div class="logo-area">
-                <i class="ph-duotone ph-brain logo-icon"></i>
-                <h1>Brain<span class="highlight">Flow</span></h1>
-                <p>Тренировка интеллекта</p>
-            </div>
-            
-            <div class="bottom-controls">
-                <button class="btn-primary" onclick="App.goToSettings()">
-                    <span>Начать игру</span>
-                    <i class="ph-bold ph-arrow-right"></i>
-                </button>
-                <button class="btn-secondary" onclick="alert('Версия 1.0 Alpha')">
-                    <span>О приложении</span>
-                </button>
+        <section id="screen-home" class="screen active">
+            <div class="home-content">
+                <div class="logo-area">
+                    <div class="logo-glow">
+                        <i class="ph-duotone ph-brain logo-icon"></i>
+                    </div>
+                    <h1>Brain<span class="highlight">Flow</span></h1>
+                    <p>Версия 2.0 • iOS 26 Style</p>
+                </div>
+                
+                <div class="bottom-controls slide-up">
+                    <button class="btn-primary" onclick="App.goToCategories()">
+                        <span>Начать игру</span>
+                        <i class="ph-bold ph-arrow-right"></i>
+                    </button>
+                    <button class="btn-glass" onclick="alert('Создано Top Coder')">
+                        <span>О приложении</span>
+                    </button>
+                </div>
             </div>
         </section>
 
-        <section id="screen-setup" class="screen hidden">
+        <section id="screen-categories" class="screen hidden">
             <header class="nav-header">
                 <button class="icon-btn" onclick="App.goToHome()"><i class="ph-bold ph-caret-left"></i></button>
-                <h2>Настройка</h2>
-                <div style="width: 40px;"></div> </header>
+                <h2>Категории</h2>
+                <div style="width: 44px;"></div>
+            </header>
 
-            <div class="setup-scroll">
-                <h3>Категория</h3>
-                <div id="categories-list" class="grid-2">
+            <div class="scroll-area">
+                <div id="categories-list" class="cat-grid">
                     </div>
+            </div>
+        </section>
 
-                <h3>Сложность</h3>
-                <div class="segment-control">
-                    <button class="segment active" data-val="easy" onclick="App.selectDiff('easy', this)">Easy</button>
-                    <button class="segment" data-val="medium" onclick="App.selectDiff('medium', this)">Medium</button>
-                    <button class="segment" data-val="hard" onclick="App.selectDiff('hard', this)">Hard</button>
+        <section id="screen-options" class="screen hidden">
+            <header class="nav-header">
+                <button class="icon-btn" onclick="App.goToCategories()"><i class="ph-bold ph-caret-left"></i></button>
+                <h2>Настройки</h2>
+                <div style="width: 44px;"></div>
+            </header>
+
+            <div class="options-container slide-up">
+                
+                <div class="option-block">
+                    <h3>Уровень сложности</h3>
+                    <div class="segment-control">
+                        <button class="segment" onclick="App.selectDiff('easy', this)">Easy</button>
+                        <button class="segment active" onclick="App.selectDiff('medium', this)">Medium</button>
+                        <button class="segment" onclick="App.selectDiff('hard', this)">Hard</button>
+                    </div>
                 </div>
 
-                <h3>Время</h3>
-                <div class="segment-control">
-                    <button class="segment" onclick="App.selectTime(15, this)">15с</button>
-                    <button class="segment active" onclick="App.selectTime(30, this)">30с</button>
-                    <button class="segment" onclick="App.selectTime(60, this)">60с</button>
+                <div class="option-block">
+                    <h3>Время на ответ</h3>
+                    <div class="segment-control">
+                        <button class="segment" onclick="App.selectTime(15, this)">15с</button>
+                        <button class="segment active" onclick="App.selectTime(30, this)">30с</button>
+                        <button class="segment" onclick="App.selectTime(60, this)">60с</button>
+                    </div>
                 </div>
+
             </div>
 
-            <button class="btn-primary float-bottom" onclick="App.startGame()">Поехали!</button>
+            <button class="btn-primary float-bottom slide-up-delay" onclick="App.startGame()">
+                <span>Поехали</span>
+                <i class="ph-bold ph-rocket-launch"></i>
+            </button>
         </section>
 
         <section id="screen-game" class="screen hidden">
             <header class="game-header">
-                <div class="pill category-pill">
-                    <i class="ph-duotone ph-circles-four icon-left"></i>
-                    <span id="game-cat-name">Общее</span>
+                <div class="pill cat-pill">
+                    <i class="ph-duotone ph-circles-four" style="color:#BF5AF2"></i>
+                    <span id="game-cat-name">...</span>
                 </div>
                 <div class="pill score-pill">
                     <i class="ph-duotone ph-diamond icon-gem"></i>
@@ -76,9 +97,9 @@
             </header>
 
             <div class="timer-wrapper">
-                <svg class="timer-svg" width="60" height="60">
-                    <circle class="timer-bg" cx="30" cy="30" r="26"></circle>
-                    <circle class="timer-progress" id="timer-circle" cx="30" cy="30" r="26"></circle>
+                <svg class="timer-svg" viewBox="0 0 100 100">
+                    <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+                    <circle class="timer-progress" id="timer-circle" cx="50" cy="50" r="45"></circle>
                 </svg>
                 <span id="timer-text">30</span>
             </div>
@@ -100,22 +121,32 @@
                 
                 <button class="lifeline-btn" id="life-poll" onclick="Game.useLifeline('poll')">
                     <div class="icon-box"><i class="ph-duotone ph-users-three"></i></div>
-                    <span>Люди <small class="cost">1.5</small></span>
+                    <span>Люди <small class="cost">5.0</small></span>
                 </button>
                 
                 <button class="lifeline-btn" id="life-skip" onclick="Game.useLifeline('skip')">
                     <div class="icon-box"><i class="ph-duotone ph-fast-forward"></i></div>
-                    <span>Скип <small class="cost">5.0</small></span>
+                    <span>Скип <small class="cost">8.0</small></span>
                 </button>
             </footer>
         </section>
 
         <div id="modal-round" class="modal hidden">
             <div class="modal-content">
-                <div class="modal-icon" id="modal-icon"></div>
-                <h2 id="modal-title">Верно!</h2>
-                <p id="modal-desc">+1.0 Кристалл</p>
-                <button class="btn-primary" onclick="Game.nextQuestion()">Далее</button>
+                <div id="modal-icon-container"></div>
+                <h2 id="modal-title">...</h2>
+                <p id="modal-desc">...</p>
+                
+                <div class="stats-row">
+                    <div class="stat"><span class="lbl">Всего</span><span class="val" id="stat-total">0</span></div>
+                    <div class="stat"><span class="lbl">Верно</span><span class="val green" id="stat-correct">0</span></div>
+                    <div class="stat"><span class="lbl">Ошибки</span><span class="val red" id="stat-wrong">0</span></div>
+                </div>
+
+                <div class="modal-btns">
+                    <button class="btn-glass" onclick="App.goToHome()">Меню</button>
+                    <button class="btn-primary" onclick="Game.nextQuestion()">Далее</button>
+                </div>
             </div>
         </div>
 
