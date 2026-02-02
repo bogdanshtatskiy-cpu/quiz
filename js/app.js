@@ -1,6 +1,6 @@
 const CONFIG = {
     rewards: { easy: 0.5, medium: 1.0, hard: 1.5 },
-    costs: { p5050: 2.5, poll: 5.0, skip: 8.0 } // Новые цены
+    costs: { p5050: 2.5, poll: 5.0, skip: 8.0 }
 };
 
 const loader = new QuestionLoader();
@@ -14,14 +14,17 @@ const App = {
         questions: [],
         currentQ: 0,
         timer: null,
+        
+        // !!! ДОБАВИЛИ ХРАНЕНИЕ ID АНИМАЦИИ ТЕКСТА !!!
+        typeInterval: null, 
+        
         timeLeft: 0,
         stats: { total: 0, correct: 0, wrong: 0 }
     },
 
     init: async () => {
-        // Загрузка очков из памяти
         const savedScore = localStorage.getItem('brainflow_score');
-        App.state.score = savedScore ? parseFloat(savedScore) : 0; // 0 если новый игрок
+        App.state.score = savedScore ? parseFloat(savedScore) : 0;
         
         const manifest = await loader.loadManifest();
         App.renderCats(manifest.categories);
@@ -46,7 +49,6 @@ const App = {
         });
         const target = document.getElementById(id);
         target.classList.remove('hidden');
-        // Небольшая задержка для плавности CSS
         setTimeout(() => target.classList.add('active'), 10);
     },
 
@@ -64,7 +66,7 @@ const App = {
 
     selectCat: (id, name) => {
         App.state.category = { id, name };
-        App.switchScreen('screen-options'); // Переход к настройкам
+        App.switchScreen('screen-options');
     },
 
     selectDiff: (val, el) => {
@@ -95,7 +97,7 @@ const App = {
     updateScoreUI: () => {
         document.getElementById('score-val').innerText = App.state.score.toFixed(1);
         Game.checkLifelines();
-        App.saveScore(); // Сохраняем при любом изменении
+        App.saveScore();
     }
 };
 
@@ -109,6 +111,9 @@ const Game = {
         Game.active = true;
         clearInterval(App.state.timer);
         
+        // !!! ВАЖНОЕ ИСПРАВЛЕНИЕ: Убиваем старую печатную машинку !!!
+        if (App.state.typeInterval) clearInterval(App.state.typeInterval);
+
         // Сброс UI
         const container = document.getElementById('answers-container');
         container.innerHTML = '';
@@ -119,17 +124,20 @@ const Game = {
         circle.style.strokeDashoffset = 0;
         circle.style.stroke = 'var(--success)';
         
-        // Печатная машинка
+        // Логика печатной машинки
         const qEl = document.getElementById('question-text');
-        qEl.textContent = "";
+        qEl.textContent = ""; // Чистим текст
+        
         let i = 0;
         const txt = q.q;
-        const speed = txt.length > 60 ? 10 : 20;
+        // Увеличили скорость печати, чтобы не тупило
+        const speed = txt.length > 60 ? 15 : 25; 
         
-        const typeInt = setInterval(() => {
+        // Сохраняем ID интервала в App.state, чтобы потом его остановить
+        App.state.typeInterval = setInterval(() => {
             qEl.textContent += txt.charAt(i);
             i++;
-            if (i >= txt.length) clearInterval(typeInt);
+            if (i >= txt.length) clearInterval(App.state.typeInterval);
         }, speed);
 
         // Рендер кнопок
@@ -153,7 +161,7 @@ const Game = {
         App.state.timeLeft = App.state.timeLimit;
         const circle = document.getElementById('timer-circle');
         const text = document.getElementById('timer-text');
-        const total = 283; // 2*PI*45
+        const total = 283; 
 
         text.innerText = App.state.timeLeft;
 
@@ -176,6 +184,11 @@ const Game = {
         if (!Game.active) return;
         Game.active = false;
         clearInterval(App.state.timer);
+        
+        // Останавливаем печать текста, если пользователь ответил быстрее, чем текст дописался
+        if (App.state.typeInterval) clearInterval(App.state.typeInterval);
+        // Дописываем вопрос полностью моментально, чтобы было красиво
+        document.getElementById('question-text').textContent = App.state.questions[App.state.currentQ].q;
 
         const q = App.state.questions[App.state.currentQ];
         const isCorrect = idx === q.correct;
@@ -230,7 +243,6 @@ const Game = {
         Game.loadQuestion();
     },
 
-    // --- ПОДСКАЗКИ ---
     checkLifelines: () => {
         ['5050', 'poll', 'skip'].forEach(type => {
             const btn = document.getElementById('life-'+type);
@@ -265,7 +277,6 @@ const Game = {
         }
 
         if (type === 'poll') {
-            // ЛОГИКА "ЛЮДИ": Только заполнение (без текста, как просил)
             let votes = [0,0,0,0];
             let remaining = 100;
             const correctVotes = Math.floor(Math.random() * (85 - 50) + 50);
@@ -286,7 +297,6 @@ const Game = {
                 const bar = document.createElement('div');
                 bar.className = 'vote-bar';
                 b.appendChild(bar);
-                // Анимация высоты от 0 до %
                 setTimeout(() => {
                     bar.style.height = votes[i] + '%'; 
                 }, 50);
